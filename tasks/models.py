@@ -1,4 +1,8 @@
 from django.db import models
+from django.contrib.auth.models import User
+
+users=models.ForeignKey(User, on_delete=models.CASCADE)
+related_name='tasks'
 
 class Task(models.Model):
     PRIORITY_CHOICES = [

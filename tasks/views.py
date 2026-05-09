@@ -14,7 +14,7 @@ from rest_framework.decorators import permission_classes
 @permission_classes([IsAuthenticated])
 def task_list(request):
     if request.method == 'GET':
-        tasks = Task.objects.all()
+        tasks = Task.objects.filter(user=request.user)
 
         # FILTER by status
         status_param = request.GET.get('status')
@@ -41,7 +41,7 @@ def task_list(request):
 @api_view(['GET', 'PUT', 'DELETE'])
 def task_detail(request, pk):
     try:
-        task = Task.objects.get(pk=pk)
+        task = Task.objects.get(pk=pk, user=request.user)
     except Task.DoesNotExist:
         return Response({"error": "Task not found"}, status=status.HTTP_404_NOT_FOUND)
 
@@ -55,7 +55,7 @@ def task_detail(request, pk):
     elif request.method == 'PUT':
         serializer = TaskSerializer(task, data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=request.user)
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
