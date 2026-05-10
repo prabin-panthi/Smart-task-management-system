@@ -1,13 +1,14 @@
 # Python
 __pycache__/
 *.pyc
-
-# Django
 db.sqlite3
-
-# Virtual environment
-.venv/
+.env
 venv/
+.venv/
+
+# React
+node_modules/
+dist/
 
 # VS Code
 .vscode/
