@@ -8,6 +8,9 @@ from django.contrib.auth.models import User
 from django.contrib.auth.hashers import make_password
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import permission_classes
+from django.contrib.auth.models import User
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
 # GET all tasks, POST new task
 @api_view(['GET', 'POST'])
@@ -86,3 +89,24 @@ def register_user(request):
         {"message": "User registered successfully"},
         status=status.HTTP_201_CREATED
     )
+    
+@api_view(['POST'])
+def register_user(request):
+
+    username = request.data.get('username')
+    password = request.data.get('password')
+
+    if User.objects.filter(username=username).exists():
+
+        return Response({
+            'error': 'Username already exists'
+        }, status=400)
+
+    user = User.objects.create_user(
+        username=username,
+        password=password
+    )
+
+    return Response({
+        'message': 'User created successfully'
+    })
