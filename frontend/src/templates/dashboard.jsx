@@ -8,6 +8,7 @@ function Dashboard() {
     const [priority, setPriority] = useState("MEDIUM")
     const [tasks, setTasks] = useState([])
     const [filter, setFilter] = useState("ALL")
+    const [titleError, setTitleError] = useState("")
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -41,11 +42,14 @@ function Dashboard() {
     }
 
     const createTask = async () => {
-        const token = localStorage.getItem("token")
-        if (!title) {
-            alert("Please enter a title")
+        if (!title.trim()) {
+            setTitleError("Task title is required")
             return
         }
+
+        setTitleError("")
+
+        const token = localStorage.getItem("token")
 
         try {
             const response = await fetch("http://127.0.0.1:8000/api/tasks/", {
@@ -58,16 +62,16 @@ function Dashboard() {
                     title,
                     description,
                     priority,
-                    deadline: deadline || null
+                    deadline: deadline ? deadline : null
                 })
             })
 
             if (response.ok) {
-                fetchTasks()
                 setTitle("")
                 setDescription("")
-                setDeadline("")
                 setPriority("MEDIUM")
+                setDeadline("")
+                fetchTasks()
             }
         } catch (error) {
             console.log(error)
@@ -147,17 +151,29 @@ function Dashboard() {
                     <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                         <input
                             type="text"
-                            placeholder="Task title"
                             value={title}
-                            onChange={(e) => setTitle(e.target.value)}
+                            onChange={(e) => {
+                                setTitle(e.target.value)
+                                if (e.target.value.trim()) setTitleError("")
+                            }}
+                            placeholder="Enter task title"
                             style={{
-                                padding: "11px 14px",
-                                border: "1px solid #ddd",
-                                borderRadius: "8px",
-                                fontSize: "14px",
-                                outline: "none"
+                                border: titleError ? "2px solid red" : "1px solid #ccc",
+                                outline: "none",
+                                padding: "8px",
+                                borderRadius: "5px"
                             }}
                         />
+
+                        {titleError && (
+                            <div style={{
+                                color: "red",
+                                fontSize: "12px",
+                                marginTop: "5px"
+                            }}>
+                                ⚠ {titleError}
+                            </div>
+                        )}
 
                         <textarea
                             placeholder="Description (optional)"
@@ -332,7 +348,7 @@ function Dashboard() {
                                         fontWeight: "bold"
                                     }}
                                 >
-                                    {task.status === "COMPLETED" ? "Undo" : "✓ Done"}
+                                    {task.status === "COMPLETED" ? "Undo" : "Done"}
                                 </button>
 
                                 <button
