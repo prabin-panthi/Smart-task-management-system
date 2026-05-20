@@ -52,7 +52,7 @@ function Navbar() {
         }}>
             {/* Logo */}
             <div style={{ fontSize: "20px", fontWeight: "bold", color: "#e94560" }}>
-                LIST 2 DO
+                TASK 2 DO
             </div>
 
             {/* Right side */}
