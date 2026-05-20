@@ -1,32 +1,36 @@
 import {
   BrowserRouter,
   Routes,
-  Route
+  Route,
+  Navigate
 } from "react-router-dom"
 
-import Login from "./templates/Login"
+import Login from "./templates/login"
 import Register from "./templates/Register"
-import Dashboard from "./templates/Dashboard"
+import Dashboard from "./templates/dashboard"
 import Navbar from "./components/Navbar"
 
+function PrivateRoute({ children }) {
+  const token = localStorage.getItem("token")
+  return token ? children : <Navigate to="/" />
+}
+
 function App() {
-
   return (
-
     <BrowserRouter>
-
       <Navbar />
-
       <Routes>
-
         <Route path="/" element={<Login />} />
-
         <Route path="/register" element={<Register />} />
-
-        <Route path="/dashboard" element={<Dashboard />} />
-
+        <Route
+          path="/dashboard"
+          element={
+            <PrivateRoute>
+              <Dashboard />
+            </PrivateRoute>
+          }
+        />
       </Routes>
-
     </BrowserRouter>
   )
 }
